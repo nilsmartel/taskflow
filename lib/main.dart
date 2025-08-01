@@ -109,6 +109,45 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     throw UnimplementedError();
   }
 
+  void _showTaskOptions(BuildContext context, int index) {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) {
+        return SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListTile(
+                leading: const Icon(Icons.edit),
+                title: const Text('Edit Task'),
+                onTap: () {
+                  Navigator.pop(context);
+                  _editTask(index);
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.delete),
+                title: const Text('Delete Task'),
+                onTap: () {
+                  Navigator.pop(context);
+                  _deleteTask(index);
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.share),
+                title: const Text('Share Task'),
+                onTap: () {
+                  Navigator.pop(context);
+                  // Implement share functionality
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   void _addNewTask() {
     // Implement add new task functionality
   }
