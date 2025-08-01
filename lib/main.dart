@@ -197,13 +197,13 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     if (date.year == today.year &&
         date.month == today.month &&
         date.day == today.day) {
-      return 'Today, ${dateFormat(date)}';
+      return 'Today, ${_dateFormat(date)}';
     } else if (date.year == tomorrow.year &&
         date.month == tomorrow.month &&
         date.day == tomorrow.day) {
-      return 'Tomorrow, ${dateFormat(date)}';
+      return 'Tomorrow, ${_dateFormat(date)}';
     } else {
-      return dateFormat(date);
+      return _dateFormat(date);
     }
   }
 
