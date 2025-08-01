@@ -41,6 +41,40 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
+  final List<Task> _tasks = [
+    Task(
+      id: '1',
+      title: 'Complete Flutter project',
+      description: 'Implement all UI screens and logic',
+      dueDate: DateTime.now().add(const Duration(days: 2)),
+      category: 'Work',
+      isCompleted: false,
+    ),
+    Task(
+      id: '2',
+      title: 'Morning workout',
+      description: '30 minutes cardio + strength training',
+      dueDate: DateTime.now(),
+      category: 'Health',
+      isCompleted: true,
+    ),
+    Task(
+      id: '3',
+      title: 'Read new book',
+      description: 'Finish chapter 5 of "Clean Code"',
+      dueDate: DateTime.now().add(const Duration(days: 1)),
+      category: 'Personal',
+      isCompleted: false,
+    ),
+    Task(
+      id: '4',
+      title: 'Team meeting',
+      description: 'Discuss project timeline with team',
+      dueDate: DateTime.now().add(const Duration(hours: 5)),
+      category: 'Work',
+      isCompleted: false,
+    ),
+  ];
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
