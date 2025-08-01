@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 
+import 'Task.dart';
+
 void main() {
   runApp(const TaskManagerApp());
 }
@@ -354,7 +356,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
 
   String _dateFormat(DateTime date) {
-    return '${date.day} ${date.month} (${date.year})'
+    return '${date.day} ${date.month} (${date.year})';
   }
 
   String _formatDate(DateTime date) {
@@ -479,41 +481,5 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         isCompleted: !_tasks[index].isCompleted,
       );
     });
-  }
-}
-
-class Task {
-  final String id;
-  final String title;
-  final String description;
-  final DateTime dueDate;
-  final String category;
-  final bool isCompleted;
-
-  Task({
-    required this.id,
-    required this.title,
-    required this.description,
-    required this.dueDate,
-    required this.category,
-    required this.isCompleted,
-  });
-
-  Task copyWith({
-    String? id,
-    String? title,
-    String? description,
-    DateTime? dueDate,
-    String? category,
-    bool? isCompleted,
-  }) {
-    return Task(
-      id: id ?? this.id,
-      title: title ?? this.title,
-      description: description ?? this.description,
-      dueDate: dueDate ?? this.dueDate,
-      category: category ?? this.category,
-      isCompleted: isCompleted ?? this.isCompleted,
-    );
   }
 }
