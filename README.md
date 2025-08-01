@@ -14,7 +14,7 @@ This project was created with significant AI assistance, serving as a test case 
 - **Maintenance challenges**: Difficult to maintain overview of AI-generated structures
 - **Debugging issues**: When problems occur, AI struggles to provide effective solutions
 
-## 💡 Lessons Learned About AI Assistance
+## Lessons Learned About AI Assistance
 
 - **Use AI sparingly**: For isolated components, not entire apps
 - **Maintain simplicity**: Actively resist AI's complexity bias
