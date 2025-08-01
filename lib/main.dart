@@ -75,6 +75,34 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       isCompleted: false,
     ),
   ];
+
+  late AnimationController _fabAnimationController;
+  late Animation<double> _fabAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _fabAnimationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 300),
+    );
+    _fabAnimation = CurvedAnimation(
+      parent: _fabAnimationController,
+      curve: Curves.easeInOut,
+    );
+
+    // Start animation after build
+    SchedulerBinding.instance.addPostFrameCallback((_) {
+      _fabAnimationController.forward();
+    });
+  }
+
+  @override
+  void dispose() {
+    _fabAnimationController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
