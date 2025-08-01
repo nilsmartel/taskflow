@@ -109,6 +109,30 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     throw UnimplementedError();
   }
 
+  String dateFormat(DateTime date) {
+    // TODO actually implement this
+    return date.toString();
+  }
+
+  String _formatDate(DateTime date) {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final tomorrow = today.add(const Duration(days: 1));
+
+    if (date.year == today.year &&
+        date.month == today.month &&
+        date.day == today.day) {
+      return 'Today, ${dateFormat(date)}';
+    } else if (date.year == tomorrow.year &&
+        date.month == tomorrow.month &&
+        date.day == tomorrow.day) {
+      return 'Tomorrow, ${dateFormat(date)}';
+    } else {
+      return dateFormat(date);
+    }
+  }
+
+
   void _showTaskOptions(BuildContext context, int index) {
     showModalBottomSheet(
       context: context,
