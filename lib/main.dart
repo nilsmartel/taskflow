@@ -126,6 +126,16 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // Progress section
+            _buildProgressSection(theme, progress.toDouble()),
+            const SizedBox(height: 24),
+
+            // Categories section
+            _buildCategoriesSection(theme),
+            const SizedBox(height: 24),
+
+            // Tasks section
+            _buildTasksSection(theme),
           ],
         ),
       ),
@@ -151,6 +161,116 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildProgressSection(ThemeData theme, double progress) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Your Progress',
+          style: theme.textTheme.titleLarge?.copyWith(
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        const SizedBox(height: 8),
+        Row(
+          children: [
+            Expanded(
+              child: LinearProgressIndicator(
+                value: progress,
+                backgroundColor: theme.colorScheme.surfaceVariant,
+                color: theme.colorScheme.primary,
+                minHeight: 12,
+                borderRadius: BorderRadius.circular(6),
+              ),
+            ),
+            const SizedBox(width: 16),
+            Text(
+              '${(progress * 100).round()}%',
+              style: theme.textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 8),
+        Text(
+          '${_tasks.where((task) => task.isCompleted).length} of ${_tasks.length} tasks completed',
+          style: theme.textTheme.bodyMedium?.copyWith(
+            color: theme.colorScheme.onSurface.withOpacity(0.6),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildCategoriesSection(ThemeData theme) {
+    const categories = ['All', 'Work', 'Personal', 'Health', 'Shopping'];
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Categories',
+          style: theme.textTheme.titleLarge?.copyWith(
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        const SizedBox(height: 12),
+        SizedBox(
+          height: 40,
+          child: ListView.separated(
+            scrollDirection: Axis.horizontal,
+            itemCount: categories.length,
+            separatorBuilder: (_, __) => const SizedBox(width: 8),
+            itemBuilder: (context, index) {
+              return ChoiceChip(
+                label: Text(categories[index]),
+                selected: index == 0,
+                onSelected: (selected) {},
+              );
+            },
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildTasksSection(ThemeData theme) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              'My Tasks',
+              style: theme.textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            TextButton(onPressed: () {}, child: const Text('See All')),
+          ],
+        ),
+        const SizedBox(height: 12),
+        AnimatedList(
+          initialItemCount: _tasks.length,
+          itemBuilder: (context, index, animation) {
+            final task = _tasks[index];
+            return SlideTransition(
+              position:
+                  Tween<Offset>(
+                    begin: const Offset(1, 0),
+                    end: Offset.zero,
+                  ).animate(
+                    CurvedAnimation(parent: animation, curve: Curves.easeOut),
+                  ),
+              child: _buildTaskCard(theme, task, index),
+            );
+          },
+        ),
+      ],
     );
   }
 
