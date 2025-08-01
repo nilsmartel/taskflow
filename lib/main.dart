@@ -108,6 +108,41 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     // TODO: implement build
     throw UnimplementedError();
   }
+
+  void _addNewTask() {
+    // Implement add new task functionality
+  }
+
+  void _editTask(int index) {
+    // Implement edit task functionality
+  }
+
+  void _deleteTask(int index) {
+    setState(() {
+      final task = _tasks.removeAt(index);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Deleted "${task.title}"'),
+          action: SnackBarAction(
+            label: 'Undo',
+            onPressed: () {
+              setState(() {
+                _tasks.insert(index, task);
+              });
+            },
+          ),
+        ),
+      );
+    });
+  }
+
+  void _toggleTaskCompletion(int index) {
+    setState(() {
+      _tasks[index] = _tasks[index].copyWith(
+        isCompleted: !_tasks[index].isCompleted,
+      );
+    });
+  }
 }
 
 class Task {
