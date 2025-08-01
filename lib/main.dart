@@ -223,7 +223,7 @@ class ProgressSection extends StatelessWidget {
             Expanded(
               child: LinearProgressIndicator(
                 value: progress,
-                backgroundColor: theme.colorScheme.surfaceVariant,
+                backgroundColor: theme.colorScheme.surfaceContainerHighest,
                 color: theme.colorScheme.primary,
                 minHeight: 12,
               ),
