@@ -73,7 +73,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     final completedTasks = _tasks.where((task) => task.isCompleted).length.toDouble();
     final double progress = _tasks.isEmpty ? 0 : completedTasks / _tasks.length.toDouble();
 
