@@ -32,7 +32,6 @@ class TaskManagerApp extends StatelessWidget {
   }
 }
 
-
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
@@ -107,7 +106,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final completedTasks = _tasks.where((task) => task.isCompleted).length;
+    final completedTasks = _tasks
+        .where((task) => task.isCompleted)
+        .length;
     final progress = _tasks.isEmpty ? 0 : completedTasks / _tasks.length;
 
     return Scaffold(
@@ -197,7 +198,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         ),
         const SizedBox(height: 8),
         Text(
-          '${_tasks.where((task) => task.isCompleted).length} of ${_tasks.length} tasks completed',
+          '${_tasks
+              .where((task) => task.isCompleted)
+              .length} of ${_tasks.length} tasks completed',
           style: theme.textTheme.bodyMedium?.copyWith(
             color: theme.colorScheme.onSurface.withOpacity(0.6),
           ),
@@ -260,12 +263,12 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             final task = _tasks[index];
             return SlideTransition(
               position:
-                  Tween<Offset>(
-                    begin: const Offset(1, 0),
-                    end: Offset.zero,
-                  ).animate(
-                    CurvedAnimation(parent: animation, curve: Curves.easeOut),
-                  ),
+              Tween<Offset>(
+                begin: const Offset(1, 0),
+                end: Offset.zero,
+              ).animate(
+                CurvedAnimation(parent: animation, curve: Curves.easeOut),
+              ),
               child: _buildTaskCard(theme, task, index),
             );
           },
@@ -384,7 +387,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             children: [
               Text(
                 'Filter Tasks',
-                style: Theme.of(context).textTheme.titleLarge,
+                style: Theme
+                    .of(context)
+                    .textTheme
+                    .titleLarge,
               ),
               const SizedBox(height: 16),
               // TODO Add filter options here
