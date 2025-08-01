@@ -41,6 +41,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
+  int _currentIndex = 0;
   final List<Task> _tasks = [
     Task(
       id: '1',
@@ -105,22 +106,52 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     final completedTasks = _tasks.where((task) => task.isCompleted).length;
+    final progress = _tasks.isEmpty ? 0 : completedTasks / _tasks.length;
 
     return Scaffold(
-        appBar: AppBar(
-          title: const Text('TaskFlow'),
-          actions: [
-            IconButton(icon: const Icon(Icons.search), onPressed: () {}),
-            IconButton(
-              icon: const Icon(Icons.filter_list),
-              onPressed: () => _showFilterBottomSheet(context),
-            ),
+      appBar: AppBar(
+        title: const Text('TaskFlow'),
+        actions: [
+          IconButton(icon: const Icon(Icons.search), onPressed: () {}),
+          IconButton(
+            icon: const Icon(Icons.filter_list),
+            onPressed: () => _showFilterBottomSheet(context),
+          ),
+        ],
+      ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
           ],
         ),
-        body: Text("pretty body"),
+      ),
+      floatingActionButton: ScaleTransition(
+        scale: _fabAnimation,
+        child: FloatingActionButton(
+          onPressed: _addNewTask,
+          child: const Icon(Icons.add),
+        ),
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _currentIndex,
+        onTap: (index) => setState(() => _currentIndex = index),
+        items: const [
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.calendar_today),
+            label: 'Calendar',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.settings),
+            label: 'Settings',
+          ),
+        ],
+      ),
     );
-
   }
 
   Widget _buildTaskCard(ThemeData theme, Task task, int index) {
