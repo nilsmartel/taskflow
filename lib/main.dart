@@ -43,40 +43,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   int _currentIndex = 0;
-  final List<Task> _tasks = [
-    Task(
-      id: '1',
-      title: 'Complete Flutter project',
-      description: 'Implement all UI screens and logic',
-      dueDate: DateTime.now().add(const Duration(days: 2)),
-      category: 'Work',
-      isCompleted: false,
-    ),
-    Task(
-      id: '2',
-      title: 'Morning workout',
-      description: '30 minutes cardio + strength training',
-      dueDate: DateTime.now(),
-      category: 'Health',
-      isCompleted: true,
-    ),
-    Task(
-      id: '3',
-      title: 'Read new book',
-      description: 'Finish chapter 5 of "Clean Code"',
-      dueDate: DateTime.now().add(const Duration(days: 1)),
-      category: 'Personal',
-      isCompleted: false,
-    ),
-    Task(
-      id: '4',
-      title: 'Team meeting',
-      description: 'Discuss project timeline with team',
-      dueDate: DateTime.now().add(const Duration(hours: 5)),
-      category: 'Work',
-      isCompleted: false,
-    ),
-  ];
+  final List<Task> _tasks = _generateSampleTasks();
 
   late AnimationController _fabAnimationController;
   late Animation<double> _fabAnimation;
@@ -93,7 +60,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       curve: Curves.easeInOut,
     );
 
-    // Start animation after build
     SchedulerBinding.instance.addPostFrameCallback((_) {
       _fabAnimationController.forward();
     });
@@ -108,10 +74,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final completedTasks = _tasks
-        .where((task) => task.isCompleted)
-        .length;
-    final progress = _tasks.isEmpty ? 0 : completedTasks / _tasks.length;
+    final completedTasks = _tasks.where((task) => task.isCompleted).length.toDouble();
+    final double progress = _tasks.isEmpty ? 0 : completedTasks / _tasks.length.toDouble();
 
     return Scaffold(
       appBar: AppBar(
@@ -129,16 +93,16 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Progress section
-            _buildProgressSection(theme, progress.toDouble()),
+            ProgressSection(progress: progress, tasks: _tasks),
             const SizedBox(height: 24),
-
-            // Categories section
-            _buildCategoriesSection(theme),
+            CategoriesSection(),
             const SizedBox(height: 24),
-
-            // Tasks section
-            _buildTasksSection(theme),
+            TasksSection(
+              tasks: _tasks,
+              onToggleCompletion: _toggleTaskCompletion,
+              onDeleteTask: _deleteTask,
+              onEditTask: _editTask,
+            ),
           ],
         ),
       ),
@@ -167,7 +131,83 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     );
   }
 
-  Widget _buildProgressSection(ThemeData theme, double progress) {
+  void _addNewTask() {
+    // Implement add new task functionality
+  }
+
+  void _editTask(int index) {
+    // Implement edit task functionality
+  }
+
+  void _deleteTask(int index) {
+    setState(() {
+      final task = _tasks.removeAt(index);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Deleted "${task.title}"'),
+          action: SnackBarAction(
+            label: 'Undo',
+            onPressed: () {
+              setState(() {
+                _tasks.insert(index, task);
+              });
+            },
+          ),
+        ),
+      );
+    });
+  }
+
+  void _toggleTaskCompletion(int index) {
+    setState(() {
+      _tasks[index] = _tasks[index].copyWith(
+        isCompleted: !_tasks[index].isCompleted,
+      );
+    });
+  }
+
+  void _showFilterBottomSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) {
+        return Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Filter Tasks',
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
+              const SizedBox(height: 16),
+              const Text('Filter options would go here'),
+              const SizedBox(height: 24),
+              ElevatedButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('Apply Filters'),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+}
+
+class ProgressSection extends StatelessWidget {
+  final double progress;
+  final List<Task> tasks;
+
+  const ProgressSection({
+    required this.progress,
+    required this.tasks,
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -186,7 +226,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 backgroundColor: theme.colorScheme.surfaceVariant,
                 color: theme.colorScheme.primary,
                 minHeight: 12,
-                borderRadius: BorderRadius.circular(6),
               ),
             ),
             const SizedBox(width: 16),
@@ -200,9 +239,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         ),
         const SizedBox(height: 8),
         Text(
-          '${_tasks
-              .where((task) => task.isCompleted)
-              .length} of ${_tasks.length} tasks completed',
+          '${tasks.where((task) => task.isCompleted).length} of ${tasks.length} tasks completed',
           style: theme.textTheme.bodyMedium?.copyWith(
             color: theme.colorScheme.onSurface.withOpacity(0.6),
           ),
@@ -210,9 +247,16 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       ],
     );
   }
+}
 
-  Widget _buildCategoriesSection(ThemeData theme) {
+class CategoriesSection extends StatelessWidget {
+  const CategoriesSection({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     const categories = ['All', 'Work', 'Personal', 'Health', 'Shopping'];
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -241,8 +285,26 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       ],
     );
   }
+}
 
-  Widget _buildTasksSection(ThemeData theme) {
+class TasksSection extends StatelessWidget {
+  final List<Task> tasks;
+  final void Function(int index) onToggleCompletion;
+  final void Function(int index) onDeleteTask;
+  final void Function(int index) onEditTask;
+
+  const TasksSection({
+    required this.tasks,
+    required this.onToggleCompletion,
+    required this.onDeleteTask,
+    required this.onEditTask,
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -260,26 +322,51 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         ),
         const SizedBox(height: 12),
         AnimatedList(
-          initialItemCount: _tasks.length,
+          initialItemCount: tasks.length,
           itemBuilder: (context, index, animation) {
-            final task = _tasks[index];
+            final task = tasks[index];
             return SlideTransition(
-              position:
-              Tween<Offset>(
+              position: Tween<Offset>(
                 begin: const Offset(1, 0),
                 end: Offset.zero,
               ).animate(
                 CurvedAnimation(parent: animation, curve: Curves.easeOut),
               ),
-              child: _buildTaskCard(theme, task, index),
+              child: TaskCard(
+                task: task,
+                index: index,
+                onToggleCompletion: onToggleCompletion,
+                onDeleteTask: onDeleteTask,
+                onEditTask: onEditTask,
+              ),
             );
           },
         ),
       ],
     );
   }
+}
 
-  Widget _buildTaskCard(ThemeData theme, Task task, int index) {
+class TaskCard extends StatelessWidget {
+  final Task task;
+  final int index;
+  final void Function(int index) onToggleCompletion;
+  final void Function(int index) onDeleteTask;
+  final void Function(int index) onEditTask;
+
+  const TaskCard({
+    required this.task,
+    required this.index,
+    required this.onToggleCompletion,
+    required this.onDeleteTask,
+    required this.onEditTask,
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
       child: Padding(
@@ -299,7 +386,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 ),
                 IconButton(
                   icon: const Icon(Icons.more_vert),
-                  onPressed: () => _showTaskOptions(context, index),
+                  onPressed: () => _showTaskOptions(context),
                 ),
               ],
             ),
@@ -344,7 +431,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 ),
                 Switch.adaptive(
                   value: task.isCompleted,
-                  onChanged: (value) => _toggleTaskCompletion(index),
+                  onChanged: (value) => onToggleCompletion(index),
                 ),
               ],
             ),
@@ -352,11 +439,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         ),
       ),
     );
-  }
-
-
-  String _dateFormat(DateTime date) {
-    return '${date.day} ${date.month} (${date.year})';
   }
 
   String _formatDate(DateTime date) {
@@ -367,49 +449,17 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     if (date.year == today.year &&
         date.month == today.month &&
         date.day == today.day) {
-      return 'Today, ${_dateFormat(date)}';
+      return 'Today';
     } else if (date.year == tomorrow.year &&
         date.month == tomorrow.month &&
         date.day == tomorrow.day) {
-      return 'Tomorrow, ${_dateFormat(date)}';
+      return 'Tomorrow';
     } else {
-      return _dateFormat(date);
+      return '${date.day}/${date.month}/${date.year}';
     }
   }
 
-  void _showFilterBottomSheet(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      builder: (context) {
-        return Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Filter Tasks',
-                style: Theme
-                    .of(context)
-                    .textTheme
-                    .titleLarge,
-              ),
-              const SizedBox(height: 16),
-              // TODO Add filter options here
-              const Text('Filter options would go here'),
-              const SizedBox(height: 24),
-              ElevatedButton(
-                onPressed: () => Navigator.pop(context),
-                child: const Text('Apply Filters'),
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
-  void _showTaskOptions(BuildContext context, int index) {
+  void _showTaskOptions(BuildContext context) {
     showModalBottomSheet(
       context: context,
       builder: (context) {
@@ -422,7 +472,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 title: const Text('Edit Task'),
                 onTap: () {
                   Navigator.pop(context);
-                  _editTask(index);
+                  onEditTask(index);
                 },
               ),
               ListTile(
@@ -430,15 +480,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 title: const Text('Delete Task'),
                 onTap: () {
                   Navigator.pop(context);
-                  _deleteTask(index);
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.share),
-                title: const Text('Share Task'),
-                onTap: () {
-                  Navigator.pop(context);
-                  // Implement share functionality
+                  onDeleteTask(index);
                 },
               ),
             ],
@@ -447,39 +489,41 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       },
     );
   }
+}
 
-  void _addNewTask() {
-    // Implement add new task functionality
-  }
-
-  void _editTask(int index) {
-    // Implement edit task functionality
-  }
-
-  void _deleteTask(int index) {
-    setState(() {
-      final task = _tasks.removeAt(index);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Deleted "${task.title}"'),
-          action: SnackBarAction(
-            label: 'Undo',
-            onPressed: () {
-              setState(() {
-                _tasks.insert(index, task);
-              });
-            },
-          ),
-        ),
-      );
-    });
-  }
-
-  void _toggleTaskCompletion(int index) {
-    setState(() {
-      _tasks[index] = _tasks[index].copyWith(
-        isCompleted: !_tasks[index].isCompleted,
-      );
-    });
-  }
+List<Task> _generateSampleTasks() {
+  return [
+    Task(
+      id: '1',
+      title: 'Complete Flutter project',
+      description: 'Implement all UI screens and logic',
+      dueDate: DateTime.now().add(const Duration(days: 2)),
+      category: 'Work',
+      isCompleted: false,
+    ),
+    Task(
+      id: '2',
+      title: 'Morning workout',
+      description: '30 minutes cardio + strength training',
+      dueDate: DateTime.now(),
+      category: 'Health',
+      isCompleted: true,
+    ),
+    Task(
+      id: '3',
+      title: 'Read new book',
+      description: 'Finish chapter 5 of "Clean Code"',
+      dueDate: DateTime.now().add(const Duration(days: 1)),
+      category: 'Personal',
+      isCompleted: false,
+    ),
+    Task(
+      id: '4',
+      title: 'Team meeting',
+      description: 'Discuss project timeline with team',
+      dueDate: DateTime.now().add(const Duration(hours: 5)),
+      category: 'Work',
+      isCompleted: false,
+    ),
+  ];
 }
