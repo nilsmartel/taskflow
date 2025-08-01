@@ -105,8 +105,22 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
-    throw UnimplementedError();
+    final completedTasks = _tasks.where((task) => task.isCompleted).length;
+
+    return Scaffold(
+        appBar: AppBar(
+          title: const Text('TaskFlow'),
+          actions: [
+            IconButton(icon: const Icon(Icons.search), onPressed: () {}),
+            IconButton(
+              icon: const Icon(Icons.filter_list),
+              onPressed: () => _showFilterBottomSheet(context),
+            ),
+          ],
+        ),
+        body: Text("pretty body"),
+    );
+
   }
 
   Widget _buildTaskCard(ThemeData theme, Task task, int index) {
